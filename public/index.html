@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kalastusvälineiden Inventaario</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <div class="logo">
+        <span class="logo-icon">🎣</span>
+        <div>
+          <h1>Kalastusvälineet</h1>
+          <p class="subtitle">Inventaariohallinta</p>
+        </div>
+      </div>
+      <button class="btn btn-primary" id="addProductBtn">
+        <span>+</span> Lisää tuote
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <div class="toolbar">
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchInput" placeholder="Hae tuotteita..." />
+      </div>
+      <div class="filter-box">
+        <select id="categoryFilter">
+          <option value="">Kaikki kategoriat</option>
+        </select>
+      </div>
+      <div class="stats" id="statsBar">
+        <span id="productCount">0 tuotetta</span>
+      </div>
+    </div>
+
+    <div id="productGrid" class="product-grid"></div>
+    <div id="emptyState" class="empty-state hidden">
+      <span class="empty-icon">🐟</span>
+      <p>Ei tuotteita löydetty</p>
+    </div>
+  </main>
+
+  <!-- Add/Edit Modal -->
+  <div id="modal" class="modal hidden">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="modalTitle">Lisää tuote</h2>
+        <button class="modal-close" id="modalClose">&times;</button>
+      </div>
+      <form id="productForm">
+        <input type="hidden" id="productId" />
+        <div class="form-grid">
+          <div class="form-group full-width">
+            <label for="productName">Tuotteen nimi *</label>
+            <input type="text" id="productName" placeholder="esim. Rapala Original 9 cm" required />
+          </div>
+          <div class="form-group">
+            <label for="productCategory">Kategoria *</label>
+            <input type="text" id="productCategory" list="categoryList" placeholder="esim. Virveli" required />
+            <datalist id="categoryList"></datalist>
+          </div>
+          <div class="form-group">
+            <label for="productUnit">Yksikkö</label>
+            <select id="productUnit">
+              <option value="kpl">kpl</option>
+              <option value="rulla">rulla</option>
+              <option value="pari">pari</option>
+              <option value="paketti">paketti</option>
+              <option value="metri">metri</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="productQuantity">Määrä</label>
+            <input type="number" id="productQuantity" min="0" value="0" />
+          </div>
+          <div class="form-group">
+            <label for="productPrice">Hinta (€)</label>
+            <input type="number" id="productPrice" min="0" step="0.01" placeholder="0.00" />
+          </div>
+          <div class="form-group full-width">
+            <label for="productDescription">Kuvaus</label>
+            <textarea id="productDescription" rows="3" placeholder="Lisätiedot tuotteesta..."></textarea>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" id="cancelBtn">Peruuta</button>
+          <button type="submit" class="btn btn-primary" id="saveBtn">Tallenna</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div id="deleteModal" class="modal hidden">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content modal-small">
+      <div class="modal-header">
+        <h2>Poista tuote</h2>
+        <button class="modal-close" id="deleteModalClose">&times;</button>
+      </div>
+      <p id="deleteMessage">Haluatko varmasti poistaa tämän tuotteen?</p>
+      <div class="form-actions">
+        <button type="button" class="btn btn-secondary" id="deleteCancelBtn">Peruuta</button>
+        <button type="button" class="btn btn-danger" id="deleteConfirmBtn">Poista</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast hidden"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>

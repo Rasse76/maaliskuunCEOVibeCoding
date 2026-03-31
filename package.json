@@ -1,0 +1,27 @@
+{
+  "name": "maaliskuunceovibecoding",
+  "version": "1.0.0",
+  "description": "CEO vibe coding tilaisuuden testiappin repo",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Rasse76/maaliskuunCEOVibeCoding.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Rasse76/maaliskuunCEOVibeCoding/issues"
+  },
+  "homepage": "https://github.com/Rasse76/maaliskuunCEOVibeCoding#readme",
+  "dependencies": {
+    "better-sqlite3": "^12.8.0",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.3.2"
+  }
+}
