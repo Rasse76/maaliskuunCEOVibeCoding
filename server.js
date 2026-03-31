@@ -45,8 +45,41 @@ app.get('/api/products', (req, res) => {
 
 // GET categories
 app.get('/api/categories', (req, res) => {
-  const categories = db.prepare('SELECT DISTINCT category FROM products ORDER BY category').all();
-  res.json(categories.map(r => r.category));
+  const categories = db.prepare('SELECT id, name FROM categories ORDER BY name').all();
+  res.json(categories);
+});
+
+// POST create category
+app.post('/api/categories', (req, res) => {
+  const { name } = req.body;
+  if (!name || !name.trim()) {
+    return res.status(400).json({ error: 'Kategorian nimi on pakollinen' });
+  }
+  try {
+    const result = db.prepare('INSERT INTO categories (name) VALUES (?)').run(name.trim());
+    const category = db.prepare('SELECT id, name FROM categories WHERE id = ?').get(result.lastInsertRowid);
+    res.status(201).json(category);
+  } catch (err) {
+    if (err.message.includes('UNIQUE')) {
+      return res.status(409).json({ error: 'Kategoria on jo olemassa' });
+    }
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// DELETE category
+app.delete('/api/categories/:id', (req, res) => {
+  const categoryId = req.params.id;
+  const existing = db.prepare('SELECT * FROM categories WHERE id = ?').get(categoryId);
+  if (!existing) return res.status(404).json({ error: 'Kategoriaa ei löydy' });
+
+  const productsInCategory = db.prepare('SELECT COUNT(*) as count FROM products WHERE category = ?').get(existing.name);
+  if (productsInCategory.count > 0) {
+    return res.status(400).json({ error: 'Kategoriassa on tuotteita, poista ne ensin' });
+  }
+
+  db.prepare('DELETE FROM categories WHERE id = ?').run(categoryId);
+  res.status(204).end();
 });
 
 // GET single product

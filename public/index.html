@@ -16,9 +16,14 @@
           <p class="subtitle">Inventaariohallinta</p>
         </div>
       </div>
-      <button class="btn btn-primary" id="addProductBtn">
-        <span>+</span> Lisää tuote
-      </button>
+      <div class="header-buttons">
+        <button class="btn btn-secondary" id="manageCategoriesBtn">
+          📁 Kategoriat
+        </button>
+        <button class="btn btn-primary" id="addProductBtn">
+          <span>+</span> Lisää tuote
+        </button>
+      </div>
     </div>
   </header>
 
@@ -37,6 +42,8 @@
         <span id="productCount">0 tuotetta</span>
       </div>
     </div>
+
+    <div id="categoryBrowser" class="category-browser"></div>
 
     <div id="productGrid" class="product-grid"></div>
     <div id="emptyState" class="empty-state hidden">
@@ -108,6 +115,27 @@
       <div class="form-actions">
         <button type="button" class="btn btn-secondary" id="deleteCancelBtn">Peruuta</button>
         <button type="button" class="btn btn-danger" id="deleteConfirmBtn">Poista</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Categories Management Modal -->
+  <div id="categoriesModal" class="modal hidden">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Hallitse kategorioita</h2>
+        <button class="modal-close" id="categoriesModalClose">&times;</button>
+      </div>
+      <form id="newCategoryForm" class="form-group" style="margin-bottom: 20px;">
+        <div style="display: flex; gap: 10px;">
+          <input type="text" id="newCategoryInput" placeholder="Uusi kategoria..." required />
+          <button type="submit" class="btn btn-primary">Lisää</button>
+        </div>
+      </form>
+      <div class="categories-list-container">
+        <h3 style="margin-bottom: 12px;">Olemassa olevat kategoriat:</h3>
+        <div id="categoriesList" class="categories-grid"></div>
       </div>
     </div>
   </div>

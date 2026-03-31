@@ -7,6 +7,14 @@ function initDatabase() {
   const db = new Database(DB_PATH);
 
   db.exec(`
+    CREATE TABLE IF NOT EXISTS categories (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL UNIQUE,
+      created_at TEXT NOT NULL DEFAULT (datetime('now'))
+    )
+  `);
+
+  db.exec(`
     CREATE TABLE IF NOT EXISTS products (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL,
@@ -19,6 +27,18 @@ function initDatabase() {
       updated_at TEXT NOT NULL DEFAULT (datetime('now'))
     )
   `);
+
+  const catCount = db.prepare('SELECT COUNT(*) as count FROM categories').get();
+  if (catCount.count === 0) {
+    const categoryInsert = db.prepare('INSERT INTO categories (name) VALUES (?)');
+    const categoryGroups = [
+      'Vavat', 'Kelat', 'Virveli', 'Lusikka', 'Siima', 'Koukut',
+      'Pilkkivälineet', 'Verkot', 'Perhokalastus', 'Syötit', 'Pyydykset',
+      'Tarvikkeet', 'Elektroniikka', 'Varusteet'
+    ];
+    categoryGroups.forEach(cat => categoryInsert.run(cat));
+    console.log('Categories initialized.');
+  }
 
   const count = db.prepare('SELECT COUNT(*) as count FROM products').get();
   if (count.count === 0) {

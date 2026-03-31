@@ -181,6 +181,66 @@ main {
 }
 
 /* ============================================================
+   Category Browser
+   ============================================================ */
+.category-browser {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 24px;
+  padding: 16px;
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  border: 1.5px solid var(--color-border);
+}
+
+.category-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 14px;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition);
+  white-space: nowrap;
+}
+
+.category-btn:hover {
+  border-color: var(--color-primary);
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+}
+
+.category-btn.active {
+  background: var(--color-primary);
+  color: #fff;
+  border-color: var(--color-primary);
+}
+
+.cat-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  height: 24px;
+  padding: 0 6px;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.1);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.category-btn.active .cat-count {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* ============================================================
    Product Grid
    ============================================================ */
 .product-grid {
@@ -489,12 +549,62 @@ main {
 .hidden { display: none !important; }
 
 /* ============================================================
+   Header Buttons
+   ============================================================ */
+.header-buttons {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+/* ============================================================
+   Categories Management
+   ============================================================ */
+.categories-list-container {
+  max-height: 50vh;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+.categories-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 12px;
+}
+
+.category-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px;
+  background: var(--color-bg);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  gap: 8px;
+}
+
+.category-name {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--color-text);
+  flex: 1;
+  word-break: break-word;
+}
+
+.delete-category {
+  flex-shrink: 0;
+}
+
+/* ============================================================
    Responsive
    ============================================================ */
 @media (max-width: 600px) {
   .header-content { height: auto; padding: 14px 0; flex-wrap: wrap; }
+  .header-buttons { flex-wrap: wrap; width: 100%; }
   main { padding: 16px 16px 40px; }
   .product-grid { grid-template-columns: 1fr; }
   .form-grid { grid-template-columns: 1fr; }
   .toolbar { gap: 10px; }
+  .category-browser { gap: 8px; padding: 12px; }
+  .category-btn { padding: 6px 12px; font-size: 0.8rem; }
 }

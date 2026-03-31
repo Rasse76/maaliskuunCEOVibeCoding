@@ -35,7 +35,8 @@ function showToast(msg, type = 'success') {
    Load & Render
    ============================================================ */
 async function loadCategories() {
-  categories = await apiFetch('/api/categories');
+  const data = await apiFetch('/api/categories');
+  categories = data.map(c => c.name);
   const sel = document.getElementById('categoryFilter');
   const list = document.getElementById('categoryList');
   sel.innerHTML = '<option value="">Kaikki kategoriat</option>';
@@ -49,6 +50,59 @@ async function loadCategories() {
     listOpt.value = cat;
     list.appendChild(listOpt);
   });
+  renderCategoryBrowser();
+}
+
+async function renderCategoryBrowser() {
+  const container = document.getElementById('categoryBrowser');
+  if (!container) return;
+  
+  container.innerHTML = '';
+  
+  // Get all products to count by category
+  const allProducts = await apiFetch('/api/products?');
+  const categoryCounts = {};
+  categories.forEach(cat => {
+    categoryCounts[cat] = allProducts.filter(p => p.category === cat).length;
+  });
+  
+  // Add "All" option
+  const allBtn = document.createElement('button');
+  allBtn.className = 'category-btn active';
+  allBtn.innerHTML = `<span>📦 Kaikki</span><span class="cat-count">${allProducts.length}</span>`;
+  allBtn.addEventListener('click', () => {
+    document.getElementById('categoryFilter').value = '';
+    loadProducts();
+    updateCategoryButtons();
+  });
+  container.appendChild(allBtn);
+  
+  // Add category buttons
+  categories.forEach(cat => {
+    const btn = document.createElement('button');
+    btn.className = 'category-btn';
+    btn.innerHTML = `<span>${escHtml(cat)}</span><span class="cat-count">${categoryCounts[cat]}</span>`;
+    btn.addEventListener('click', () => {
+      document.getElementById('categoryFilter').value = cat;
+      loadProducts();
+      updateCategoryButtons();
+    });
+    container.appendChild(btn);
+  });
+  
+  updateCategoryButtons();
+}
+
+function updateCategoryButtons() {
+  const selectedCategory = document.getElementById('categoryFilter').value;
+  document.querySelectorAll('.category-btn').forEach((btn, idx) => {
+    btn.classList.remove('active');
+    if (idx === 0 && !selectedCategory) {
+      btn.classList.add('active');
+    } else if (idx > 0 && btn.textContent.includes(selectedCategory)) {
+      btn.classList.add('active');
+    }
+  });
 }
 
 async function loadProducts() {
@@ -59,6 +113,7 @@ async function loadProducts() {
   if (category) params.set('category', category);
   products = await apiFetch(`/api/products?${params}`);
   renderProducts();
+  updateCategoryButtons();
 }
 
 function quantityStatus(qty) {
@@ -221,6 +276,68 @@ async function deleteProduct() {
 }
 
 /* ============================================================
+   Category Management
+   ============================================================ */
+async function loadCategoriesList() {
+  const data = await apiFetch('/api/categories');
+  const list = document.getElementById('categoriesList');
+  list.innerHTML = '';
+  if (data.length === 0) {
+    list.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #666;">Ei kategorioita</p>';
+    return;
+  }
+  data.forEach(cat => {
+    const item = document.createElement('div');
+    item.className = 'category-item';
+    item.innerHTML = `
+      <span class="category-name">${escHtml(cat.name)}</span>
+      <button class="btn-icon delete-category" data-id="${cat.id}" title="Poista">🗑️</button>
+    `;
+    list.appendChild(item);
+  });
+}
+
+function openCategoriesModal() {
+  loadCategoriesList();
+  document.getElementById('categoriesModal').classList.remove('hidden');
+}
+
+function closeCategoriesModal() {
+  document.getElementById('categoriesModal').classList.add('hidden');
+  document.getElementById('newCategoryInput').value = '';
+}
+
+async function createCategory(e) {
+  e.preventDefault();
+  const name = document.getElementById('newCategoryInput').value.trim();
+  if (!name) {
+    showToast('Kirjoita kategorian nimi', 'error');
+    return;
+  }
+  try {
+    await apiFetch('/api/categories', { method: 'POST', body: JSON.stringify({ name }) });
+    showToast('Kategoria lisätty ✓');
+    document.getElementById('newCategoryInput').value = '';
+    await loadCategoriesList();
+    await loadCategories();
+  } catch (err) {
+    showToast(err.message, 'error');
+  }
+}
+
+async function deleteCategory(id) {
+  if (!confirm('Haluatko varmasti poistaa tämän kategorian? (vain kategoriassa ei ole tuotteita)')) return;
+  try {
+    await apiFetch(`/api/categories/${id}`, { method: 'DELETE' });
+    showToast('Kategoria poistettu');
+    await loadCategoriesList();
+    await loadCategories();
+  } catch (err) {
+    showToast(err.message, 'error');
+  }
+}
+
+/* ============================================================
    Escape HTML helper
    ============================================================ */
 function escHtml(str) {
@@ -260,6 +377,18 @@ document.getElementById('addProductBtn').addEventListener('click', () => {
   openModal();
 });
 
+document.getElementById('manageCategoriesBtn').addEventListener('click', openCategoriesModal);
+document.getElementById('categoriesModalClose').addEventListener('click', closeCategoriesModal);
+document.getElementById('categoriesModal').querySelector('.modal-backdrop').addEventListener('click', closeCategoriesModal);
+document.getElementById('newCategoryForm').addEventListener('submit', createCategory);
+
+document.getElementById('categoriesList').addEventListener('click', async (e) => {
+  const btn = e.target.closest('.delete-category');
+  if (btn) {
+    await deleteCategory(btn.dataset.id);
+  }
+});
+
 document.getElementById('modalClose').addEventListener('click', closeModal);
 document.getElementById('cancelBtn').addEventListener('click', closeModal);
 document.getElementById('modal').querySelector('.modal-backdrop').addEventListener('click', closeModal);
@@ -276,7 +405,10 @@ document.getElementById('searchInput').addEventListener('input', () => {
   clearTimeout(searchDebounce);
   searchDebounce = setTimeout(loadProducts, 280);
 });
-document.getElementById('categoryFilter').addEventListener('change', loadProducts);
+document.getElementById('categoryFilter').addEventListener('change', () => {
+  loadProducts();
+  updateCategoryButtons();
+});
 
 /* ============================================================
    Init
