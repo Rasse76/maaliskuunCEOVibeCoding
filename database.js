@@ -32,9 +32,11 @@ function initDatabase() {
   if (catCount.count === 0) {
     const categoryInsert = db.prepare('INSERT INTO categories (name) VALUES (?)');
     const categoryGroups = [
-      'Vavat', 'Kelat', 'Virveli', 'Lusikka', 'Siima', 'Koukut',
-      'Pilkkivälineet', 'Verkot', 'Perhokalastus', 'Syötit', 'Pyydykset',
-      'Tarvikkeet', 'Elektroniikka', 'Varusteet'
+      'Vavat & Kelat',
+      'Viheet',
+      'Pyydykset',
+      'Tarvikkeet',
+      'Varusteet'
     ];
     categoryGroups.forEach(cat => categoryInsert.run(cat));
     console.log('Categories initialized.');
@@ -50,7 +52,7 @@ function initDatabase() {
     const products = [
       {
         name: 'Shimano Catana 270 Heittovapa',
-        category: 'Vavat',
+        category: 'Vavat & Kelat',
         description: 'Laadukas heittovapa lohelle ja hauelle. Pituus 270 cm, heittopallo 20-60 g.',
         quantity: 8,
         unit: 'kpl',
@@ -58,7 +60,7 @@ function initDatabase() {
       },
       {
         name: 'Daiwa Crossfire 200 Kelaus',
-        category: 'Kelat',
+        category: 'Vavat & Kelat',
         description: 'Monipuolinen spinningkelaus kaikenlaiseen kalastukseen. Tilavuus 200 m / 0.30 mm.',
         quantity: 12,
         unit: 'kpl',
@@ -66,7 +68,7 @@ function initDatabase() {
       },
       {
         name: 'Rapala Original Floating 9 cm',
-        category: 'Virveli',
+        category: 'Viheet',
         description: 'Klassinen Rapala-uistin. Sopii ahvenelle, hauuelle ja taimenelle. Väri: kultainen.',
         quantity: 25,
         unit: 'kpl',
@@ -74,7 +76,7 @@ function initDatabase() {
       },
       {
         name: 'Abu Garcia Droppen 18 g',
-        category: 'Lusikka',
+        category: 'Viheet',
         description: 'Tehokas lohilusikka virtaavaan veteen. Paino 18 g, väri: hopea/punainen.',
         quantity: 30,
         unit: 'kpl',
@@ -82,7 +84,7 @@ function initDatabase() {
       },
       {
         name: 'Berkley Trilene XT 0.30 mm 300 m',
-        category: 'Siima',
+        category: 'Tarvikkeet',
         description: 'Korkealaatuinen monofilamenttivaijeri. Erittäin kestävä ja vähän muistia.',
         quantity: 15,
         unit: 'rulla',
@@ -90,7 +92,7 @@ function initDatabase() {
       },
       {
         name: 'Mustad Hauki 3x Treble Hook 2/0',
-        category: 'Koukut',
+        category: 'Tarvikkeet',
         description: 'Vahva kolmoiskoukku hauelle. Koko 2/0, teräväkärkinen ja pitkäikäinen.',
         quantity: 100,
         unit: 'kpl',
@@ -98,7 +100,7 @@ function initDatabase() {
       },
       {
         name: 'Suomusmäki Pilkkivapa 60 cm',
-        category: 'Pilkkivälineet',
+        category: 'Pyydykset',
         description: 'Perinteinen suomalainen pilkkivapa. Pituus 60 cm, erittäin herkkä täristelijä.',
         quantity: 20,
         unit: 'kpl',
@@ -106,7 +108,7 @@ function initDatabase() {
       },
       {
         name: 'Normark Hauki Verkko 60 m',
-        category: 'Verkot',
+        category: 'Pyydykset',
         description: 'Ammattilaatua hauki verkko. Korkeus 1.8 m, silmäkoko 55 mm.',
         quantity: 5,
         unit: 'kpl',
@@ -114,7 +116,7 @@ function initDatabase() {
       },
       {
         name: 'Fladen Perhovapa 4-osainen 9\' #7',
-        category: 'Vavat',
+        category: 'Vavat & Kelat',
         description: 'Laadukkas perhovapa matkailuun. 4-osainen, koko #7, sopii järveen ja jokeen.',
         quantity: 6,
         unit: 'kpl',
@@ -122,7 +124,7 @@ function initDatabase() {
       },
       {
         name: 'Rio InTouch Gold Perhonsiima #7',
-        category: 'Siima',
+        category: 'Tarvikkeet',
         description: 'Premium WF-7-F perhonsiima. Helppo heittää, sopii kaikenlaiseen perhokalastukseen.',
         quantity: 10,
         unit: 'kpl',
@@ -130,7 +132,7 @@ function initDatabase() {
       },
       {
         name: 'Muddler Minnow #8 (kotitekoinen)',
-        category: 'Perhokalastus',
+        category: 'Viheet',
         description: 'Klassiinen streameriperho taimenelle ja kirjolohelle. Sidottu käsin, hirenkarvainen.',
         quantity: 40,
         unit: 'kpl',
@@ -138,7 +140,7 @@ function initDatabase() {
       },
       {
         name: 'Plastex Matojäähdytyslaatikko 2 L',
-        category: 'Syötit',
+        category: 'Tarvikkeet',
         description: 'Pitää kastematot elävinä pitkään. Tuuletusaukot, helppo kuljettaa.',
         quantity: 18,
         unit: 'kpl',
@@ -146,7 +148,7 @@ function initDatabase() {
       },
       {
         name: 'Kuusamo Toppen 17 g',
-        category: 'Lusikka',
+        category: 'Viheet',
         description: 'Suomalainen klassikkolusikka. Paino 17 g, erittäin tehokas hauulle ja ahvenelle.',
         quantity: 35,
         unit: 'kpl',
@@ -154,7 +156,7 @@ function initDatabase() {
       },
       {
         name: 'Abu Garcia Reflex 14 g',
-        category: 'Virveli',
+        category: 'Viheet',
         description: 'Monikäyttöinen pyörivävieheinen jigi. Paino 14 g, väri: vihreä/hopea.',
         quantity: 22,
         unit: 'kpl',
@@ -178,7 +180,7 @@ function initDatabase() {
       },
       {
         name: 'Helin Poika 11 g - Kulta',
-        category: 'Lusikka',
+        category: 'Viheet',
         description: 'Kotimaiseen järvikalastukseen suunniteltu lusikka. 11 g, kultainen pinta.',
         quantity: 28,
         unit: 'kpl',
@@ -186,7 +188,7 @@ function initDatabase() {
       },
       {
         name: 'Rapala VMC Jighead 7 g 4/0',
-        category: 'Koukut',
+        category: 'Tarvikkeet',
         description: 'Painokoukku softbait-vieheille. Paino 7 g, koko 4/0, erittäin terävä.',
         quantity: 50,
         unit: 'kpl',
@@ -194,7 +196,7 @@ function initDatabase() {
       },
       {
         name: 'Garmin Striker 4 Kaikuluotain',
-        category: 'Elektroniikka',
+        category: 'Varusteet',
         description: 'Kompakti GPS-kaikuluotain. Näyttö 3.5", ClearVü-tekniikka, vesitiivis.',
         quantity: 3,
         unit: 'kpl',

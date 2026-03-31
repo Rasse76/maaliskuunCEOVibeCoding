@@ -53,6 +53,14 @@ async function loadCategories() {
   renderCategoryBrowser();
 }
 
+const CATEGORY_ICONS = {
+  'Vavat & Kelat': '🎣',
+  'Viheet':        '🪝',
+  'Pyydykset':     '🕸️',
+  'Tarvikkeet':    '🧰',
+  'Varusteet':     '🎒',
+};
+
 async function renderCategoryBrowser() {
   const container = document.getElementById('categoryBrowser');
   if (!container) return;
@@ -69,7 +77,7 @@ async function renderCategoryBrowser() {
   // Add "All" option
   const allBtn = document.createElement('button');
   allBtn.className = 'category-btn active';
-  allBtn.innerHTML = `<span>📦 Kaikki</span><span class="cat-count">${allProducts.length}</span>`;
+  allBtn.innerHTML = `<span class="cat-icon">📦</span><span class="cat-label">Kaikki</span><span class="cat-count">${allProducts.length}</span>`;
   allBtn.addEventListener('click', () => {
     document.getElementById('categoryFilter').value = '';
     loadProducts();
@@ -79,9 +87,10 @@ async function renderCategoryBrowser() {
   
   // Add category buttons
   categories.forEach(cat => {
+    const icon = CATEGORY_ICONS[cat] || '📁';
     const btn = document.createElement('button');
     btn.className = 'category-btn';
-    btn.innerHTML = `<span>${escHtml(cat)}</span><span class="cat-count">${categoryCounts[cat]}</span>`;
+    btn.innerHTML = `<span class="cat-icon">${icon}</span><span class="cat-label">${escHtml(cat)}</span><span class="cat-count">${categoryCounts[cat]}</span>`;
     btn.addEventListener('click', () => {
       document.getElementById('categoryFilter').value = cat;
       loadProducts();
@@ -97,9 +106,10 @@ function updateCategoryButtons() {
   const selectedCategory = document.getElementById('categoryFilter').value;
   document.querySelectorAll('.category-btn').forEach((btn, idx) => {
     btn.classList.remove('active');
+    const label = btn.querySelector('.cat-label')?.textContent || '';
     if (idx === 0 && !selectedCategory) {
       btn.classList.add('active');
-    } else if (idx > 0 && btn.textContent.includes(selectedCategory)) {
+    } else if (selectedCategory && label === selectedCategory) {
       btn.classList.add('active');
     }
   });
@@ -136,18 +146,48 @@ function renderProducts() {
   }
   empty.classList.add('hidden');
 
-  grid.innerHTML = products.map(p => {
-    const status = quantityStatus(p.quantity);
-    const priceHtml = p.price != null
-      ? `<span class="card-price">${Number(p.price).toFixed(2)} €</span>`
-      : '<span class="card-price" style="opacity:0.35">–</span>';
+  const selectedCategory = document.getElementById('categoryFilter').value;
+  const orderedCats = selectedCategory
+    ? [selectedCategory]
+    : [
+        ...categories.filter(cat => products.some(p => p.category === cat)),
+        ...[...new Set(products.map(p => p.category))].filter(c => !categories.includes(c)),
+      ];
 
+  grid.innerHTML = orderedCats.map(cat => {
+    const catProducts = products.filter(p => p.category === cat);
+    if (catProducts.length === 0) return '';
+    const icon = CATEGORY_ICONS[cat] || '📁';
     return `
-      <article class="product-card" data-id="${p.id}">
-        <div class="card-header">
-          <h3 class="card-title">${escHtml(p.name)}</h3>
-          <span class="card-category">${escHtml(p.category)}</span>
+      <section class="category-section">
+        <div class="category-section-header">
+          <span class="category-section-icon">${icon}</span>
+          <h2 class="category-section-title">${escHtml(cat)}</h2>
+          <span class="category-section-count">${catProducts.length} tuotetta</span>
         </div>
+        <div class="category-product-grid">
+          ${catProducts.map(p => renderCard(p)).join('')}
+        </div>
+      </section>
+    `;
+  }).join('');
+}
+
+function renderCard(p) {
+  const status = quantityStatus(p.quantity);
+  const priceHtml = p.price != null
+    ? `<span class="card-price">${Number(p.price).toFixed(2)} €</span>`
+    : '<span class="card-price" style="opacity:0.35">–</span>';
+  const imgUrl = `https://picsum.photos/seed/fishing${p.id}/400/250`;
+
+  return `
+    <article class="product-card" data-id="${p.id}">
+      <div class="card-image-wrap">
+        <img class="card-image" src="${imgUrl}" alt="${escHtml(p.name)}" loading="lazy" />
+        <span class="quantity-badge ${status.cls} card-status-badge">${status.label}</span>
+      </div>
+      <div class="card-body">
+        <h3 class="card-title">${escHtml(p.name)}</h3>
         ${p.description ? `<p class="card-description">${escHtml(p.description)}</p>` : ''}
         <div class="card-footer">
           <div class="quantity-control">
@@ -155,7 +195,6 @@ function renderProducts() {
             <span class="quantity-display">${p.quantity}</span>
             <button class="qty-inc" data-id="${p.id}" title="Lisää">+</button>
             <span class="quantity-unit">${escHtml(p.unit)}</span>
-            <span class="quantity-badge ${status.cls}">${status.label}</span>
           </div>
           <div style="display:flex;align-items:center;gap:10px;">
             ${priceHtml}
@@ -165,9 +204,9 @@ function renderProducts() {
             </div>
           </div>
         </div>
-      </article>
-    `;
-  }).join('');
+      </div>
+    </article>
+  `;
 }
 
 /* ============================================================
